@@ -1,0 +1,52 @@
+@model AcxiomCRM.Models.ViewModels.AdminUserViewModel
+
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<div class="container mt-4">
+    <h2>User Details</h2>
+    <hr />
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">User ID</dt>
+                <dd class="col-sm-9">@Model.Id</dd>
+
+                <dt class="col-sm-3">Full Name</dt>
+                <dd class="col-sm-9">@Model.FullName</dd>
+
+                <dt class="col-sm-3">Email</dt>
+                <dd class="col-sm-9">@Model.Email</dd>
+
+                <dt class="col-sm-3">Role</dt>
+                <dd class="col-sm-9">@Model.CurrentRole</dd>
+
+                <dt class="col-sm-3">Account Status</dt>
+                <dd class="col-sm-9">
+                    @if (Model.IsActive)
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Inactive</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Registration Date</dt>
+                <dd class="col-sm-9">
+                    @Model.CreatedDate.ToString("dd MMM yyyy HH:mm")
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a asp-action="Edit" asp-route-id="@Model.Id"
+           class="btn btn-warning">Manage User</a>
+
+        <a asp-action="Index" class="btn btn-secondary">Back to Users</a>
+    </div>
+</div>

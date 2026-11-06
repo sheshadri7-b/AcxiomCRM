@@ -1,0 +1,91 @@
+@model AcxiomCRM.Models.FollowUp
+
+@{
+    ViewData["Title"] = "Edit Follow-up";
+}
+
+<div class="container mt-4">
+    <h2>Edit Follow-up</h2>
+    <hr />
+
+    <form asp-action="Edit" asp-route-id="@Model.FollowUpId" method="post">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" asp-for="FollowUpId" />
+
+        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+        <div class="mb-3">
+            <label asp-for="Subject" class="form-label"></label>
+            <input asp-for="Subject" class="form-control" />
+            <span asp-validation-for="Subject" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Customer</label>
+            <select asp-for="CustomerId" asp-items="ViewBag.Customers"
+                    class="form-select">
+                <option value="">-- Select Customer (optional) --</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Lead</label>
+            <select asp-for="LeadId" asp-items="ViewBag.Leads"
+                    class="form-select">
+                <option value="">-- Select Lead (optional) --</option>
+            </select>
+            <small class="text-muted">
+                Select exactly one customer or one lead, not both.
+            </small>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="FollowUpDate" class="form-label"></label>
+            <input asp-for="FollowUpDate" type="date"
+                   asp-format="{0:yyyy-MM-dd}" class="form-control" />
+            <span asp-validation-for="FollowUpDate" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="FollowUpType" class="form-label"></label>
+            <select asp-for="FollowUpType" asp-items="ViewBag.Types"
+                    class="form-select"></select>
+            <span asp-validation-for="FollowUpType" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Status" class="form-label"></label>
+            <select asp-for="Status" asp-items="ViewBag.Statuses"
+                    class="form-select"></select>
+            <span asp-validation-for="Status" class="text-danger"></span>
+        </div>
+
+        @if (User.IsInRole("Admin"))
+        {
+            <div class="mb-3">
+                <label asp-for="AssignedTo" class="form-label">
+                    Assign To
+                </label>
+                <select asp-for="AssignedTo" asp-items="ViewBag.Users"
+                        class="form-select">
+                    <option value="">-- Select User --</option>
+                </select>
+                <span asp-validation-for="AssignedTo" class="text-danger"></span>
+            </div>
+        }
+
+        <div class="mb-3">
+            <label asp-for="Remarks" class="form-label"></label>
+            <textarea asp-for="Remarks" class="form-control" rows="4"></textarea>
+            <span asp-validation-for="Remarks" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update Follow-up</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,199 @@
+
+@model AcxiomCRM.Models.Lead
+
+@{
+    ViewData["Title"] = "Edit Lead";
+    var canAssignUsers = User.IsInRole("Admin") || User.IsInRole("Manager");
+}
+
+<div class="container py-4">
+
+    <div class="mb-4">
+        <h2 class="fw-bold">Edit Lead</h2>
+        <p class="text-muted">Update the lead's information and sales progress.</p>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+
+            <form asp-action="Edit"
+                  asp-route-id="@Model.LeadId"
+                  method="post">
+
+                <input type="hidden" asp-for="LeadId" />
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3"></div>
+
+                <h5 class="fw-semibold mb-3">Contact Information</h5>
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label asp-for="LeadCode" class="form-label">Lead Code</label>
+                        <input asp-for="LeadCode" class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="LeadName" class="form-label">Lead Name *</label>
+                        <input asp-for="LeadName" class="form-control" />
+                        <span asp-validation-for="LeadName"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="CompanyName" class="form-label">Company Name</label>
+                        <input asp-for="CompanyName" class="form-control" />
+                        <span asp-validation-for="CompanyName"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label">Email</label>
+                        <input asp-for="Email" type="email" class="form-control" />
+                        <span asp-validation-for="Email"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Phone" class="form-label">Phone</label>
+                        <input asp-for="Phone" class="form-control" />
+                        <span asp-validation-for="Phone"
+                              class="text-danger"></span>
+                    </div>
+
+                </div>
+
+                <hr class="my-4" />
+
+                <h5 class="fw-semibold mb-3">Lead Information</h5>
+
+                <div class="row g-3">
+
+                    <div class="col-md-6">
+                        <label asp-for="Source" class="form-label">Lead Source *</label>
+                        <select asp-for="Source" class="form-select">
+                            <option value="">Select source</option>
+                            <option value="Website">Website</option>
+                            <option value="Referral">Referral</option>
+                            <option value="Social Media">Social Media</option>
+                            <option value="Email Campaign">Email Campaign</option>
+                            <option value="Cold Call">Cold Call</option>
+                            <option value="Advertisement">Advertisement</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <span asp-validation-for="Source"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Status" class="form-label">Status</label>
+                        <select asp-for="Status" class="form-select">
+                            @foreach (string status in ViewBag.Statuses)
+                            {
+                                if (status != "Converted" || Model.Status == "Converted")
+                                {
+                                    <option value="@status">@status</option>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="Status"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Priority" class="form-label">Priority</label>
+                        <select asp-for="Priority" class="form-select">
+                            @foreach (string priority in ViewBag.Priorities)
+                            {
+                                <option value="@priority">@priority</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Priority"
+                              class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="ExpectedValue" class="form-label">
+                            Expected Value (₹)
+                        </label>
+                        <input asp-for="ExpectedValue"
+                               type="number"
+                               min="0"
+                               step="0.01"
+                               class="form-control" />
+                        <span asp-validation-for="ExpectedValue"
+                              class="text-danger"></span>
+                    </div>
+
+                    @if (canAssignUsers)
+                    {
+                        <div class="col-md-6">
+                            <label asp-for="AssignedTo" class="form-label">
+                                Assign To
+                            </label>
+
+                            <select asp-for="AssignedTo" class="form-select">
+                                <option value="">Select user</option>
+
+                                @foreach (var user in ViewBag.Users)
+                                {
+                                    <option value="@user.Id">
+                                        @user.FullName (@user.Email)
+                                    </option>
+                                }
+                            </select>
+
+                            <span asp-validation-for="AssignedTo"
+                                  class="text-danger"></span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-md-6">
+                            <label class="form-label">Assigned To</label>
+                            <input type="text"
+                                   class="form-control"
+                                   value="You (Current Sales Executive)"
+                                   readonly />
+                            <small class="text-muted">
+                                You cannot change lead ownership.
+                            </small>
+                        </div>
+                    }
+
+                    <div class="col-12">
+                        <label asp-for="Notes" class="form-label">Notes</label>
+                        <textarea asp-for="Notes"
+                                  class="form-control"
+                                  rows="4"></textarea>
+                        <span asp-validation-for="Notes"
+                              class="text-danger"></span>
+                    </div>
+
+                </div>
+
+                <hr class="my-4" />
+
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index"
+                       class="btn btn-outline-secondary">
+                        Back to Leads
+                    </a>
+
+                    <button type="submit" class="btn btn-primary">
+                        Save Changes
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,124 @@
+
+@model AcxiomCRM.Models.ViewModels.AdminUserViewModel
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Manage User";
+}
+
+<div class="container mt-4">
+    <h2>Manage User</h2>
+    <hr />
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <form asp-action="Edit" method="post">
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3"></div>
+
+                <input type="hidden" asp-for="Id" />
+
+                <!-- Full Name -->
+                <div class="mb-3">
+                    <label asp-for="FullName" class="form-label">
+                        Full Name
+                    </label>
+                    <input asp-for="FullName" class="form-control"
+                           placeholder="Enter full name" />
+                    <span asp-validation-for="FullName"
+                          class="text-danger"></span>
+                </div>
+
+                <!-- Email -->
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">
+                        Email
+                    </label>
+                    <input asp-for="Email" class="form-control" readonly />
+                </div>
+
+                <!-- Current Role -->
+                <div class="mb-3">
+                    <label class="form-label">Current Role</label>
+                    <input class="form-control"
+                           value="@Model.CurrentRole" readonly />
+                </div>
+
+                <!-- Assign Role -->
+                <div class="mb-3">
+    <label asp-for="SelectedRole" class="form-label">
+        Assign Role
+    </label>
+
+    <select name="SelectedRole" id="SelectedRole"
+            class="form-select">
+        <option value="Admin"
+                selected="@(Model.SelectedRole == "Admin" ? "selected" : null)">
+            Admin
+        </option>
+
+        <option value="Manager"
+                selected="@(Model.SelectedRole == "Manager" ? "selected" : null)">
+            Manager
+        </option>
+
+        <option value="SalesExecutive"
+                selected="@(Model.SelectedRole == "SalesExecutive" ? "selected" : null)">
+            SalesExecutive
+        </option>
+    </select>
+
+    <span asp-validation-for="SelectedRole"
+          class="text-danger"></span>
+</div>
+
+                <!-- Assign Manager -->
+                <div class="mb-3">
+                    <label asp-for="ManagerId" class="form-label">
+                        Assign Manager
+                    </label>
+
+                    <select asp-for="ManagerId"
+                            class="form-select"
+                            asp-items="@(new SelectList(ViewBag.Managers, "Id", "FullName", Model.ManagerId))">
+                        <option value="">-- No Manager --</option>
+                    </select>
+
+                    <span asp-validation-for="ManagerId"
+                          class="text-danger"></span>
+
+                    <small class="text-muted">
+                        Manager assignment applies to SalesExecutive users.
+                    </small>
+                </div>
+
+                <!-- Account Status -->
+                <div class="form-check mb-3">
+                    <input asp-for="IsActive"
+                           class="form-check-input" />
+                    <label asp-for="IsActive"
+                           class="form-check-label">
+                        Account Active
+                    </label>
+                </div>
+
+                <!-- Buttons -->
+                <button type="submit" class="btn btn-primary">
+                    Save Changes
+                </button>
+
+                <a asp-action="Index" class="btn btn-secondary">
+                    Cancel
+                </a>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

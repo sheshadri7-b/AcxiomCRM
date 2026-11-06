@@ -1,0 +1,197 @@
+
+@model AcxiomCRM.Models.Lead
+
+@{
+    ViewData["Title"] = "Lead Details";
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">Lead Details</h2>
+            <p class="text-muted mb-0">
+                View complete information about this lead.
+            </p>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+
+            @if (Model.Status != "Converted")
+            {
+                <a asp-action="Edit"
+                   asp-route-id="@Model.LeadId"
+                   class="btn btn-primary">
+                    Edit Lead
+                </a>
+            }
+
+            @if (Model.Status == "Qualified")
+            {
+                <a asp-action="Convert"
+                   asp-route-id="@Model.LeadId"
+                   class="btn btn-success">
+                    Convert Lead
+                </a>
+            }
+
+            <a asp-action="Index"
+               class="btn btn-outline-secondary">
+                Back to Leads
+            </a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body p-4">
+
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h4 class="fw-bold">@Model.LeadName</h4>
+                    <p class="text-muted mb-0">@Model.LeadCode</p>
+                    <p class="text-muted">@Model.CompanyName</p>
+                </div>
+
+                <div class="text-end">
+                    <span class="badge bg-secondary fs-6">
+                        @Model.Status
+                    </span>
+
+                    @if (Model.Priority == "High")
+                    {
+                        <span class="badge bg-danger fs-6">High Priority</span>
+                    }
+                    else if (Model.Priority == "Medium")
+                    {
+                        <span class="badge bg-warning text-dark fs-6">
+                            Medium Priority
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success fs-6">
+                            Low Priority
+                        </span>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">Contact Information</h5>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <div class="mb-3">
+                        <small class="text-muted">Lead Name</small>
+                        <p class="fw-semibold">@Model.LeadName</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-muted">Company</small>
+                        <p class="fw-semibold">
+                            @(Model.CompanyName ?? "Not provided")
+                        </p>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-muted">Email</small>
+                        <p class="fw-semibold">
+                            @(Model.Email ?? "Not provided")
+                        </p>
+                    </div>
+
+                    <div class="mb-0">
+                        <small class="text-muted">Phone</small>
+                        <p class="fw-semibold">
+                            @(Model.Phone ?? "Not provided")
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">Lead Information</h5>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <div class="mb-3">
+                        <small class="text-muted">Lead Source</small>
+                        <p class="fw-semibold">@Model.Source</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-muted">Expected Value</small>
+                        <p class="fw-semibold">
+                            @Model.ExpectedValue.ToString(
+                                "C",
+                                System.Globalization.CultureInfo.GetCultureInfo("en-IN"))
+                        </p>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-muted">Assigned To</small>
+                        <p class="fw-semibold">
+                            @(ViewBag.AssignedUser ?? "Unknown")
+                        </p>
+                    </div>
+
+                    <div class="mb-0">
+                        <small class="text-muted">Created Date</small>
+                        <p class="fw-semibold">
+                            @Model.CreatedDate.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">Additional Information</h5>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <small class="text-muted">Notes</small>
+
+                    <p class="mb-0" style="white-space: pre-wrap;">@(Model.Notes ?? "No additional notes available.")</p>
+
+                    @if (Model.ConvertedCustomerId.HasValue)
+                    {
+                        <hr />
+
+                        <small class="text-muted">Converted Customer ID</small>
+                        <p class="fw-semibold">
+                            @Model.ConvertedCustomerId
+                        </p>
+
+                        <a asp-controller="Customer"
+                           asp-action="Details"
+                           asp-route-id="@Model.ConvertedCustomerId"
+                           class="btn btn-outline-primary btn-sm">
+                            View Converted Customer
+                        </a>
+                    }
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,102 @@
+@model AcxiomCRM.Models.Customer
+
+@{
+    ViewData["Title"] = "Customer Details";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">Customer Details</h2>
+            <p class="text-muted mb-0">View complete customer information</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Edit" asp-route-id="@Model.CustomerId" class="btn btn-primary">Edit Customer</a>
+            <a asp-action="Index" class="btn btn-outline-secondary">Back to Customers</a>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0">@Model.CustomerName</h5>
+                @if (Model.Status == "Active")
+                {
+                    <span class="badge bg-success">Active</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">@Model.Status</span>
+                }
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <h6 class="text-primary fw-bold mb-3">Basic Information</h6>
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <small class="text-muted">Customer Code</small>
+                    <p class="fw-semibold">@Model.CustomerCode</p>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted">Customer Name</small>
+                    <p class="fw-semibold">@Model.CustomerName</p>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted">Company Name</small>
+                    <p class="fw-semibold">@(Model.CompanyName ?? "Not provided")</p>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted">Email Address</small>
+                    <p class="fw-semibold"><a href="mailto:@Model.Email">@Model.Email</a></p>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted">Phone Number</small>
+                    <p class="fw-semibold"><a href="tel:@Model.Phone">@Model.Phone</a></p>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted">Assigned Employee</small>
+                    <p class="fw-semibold">@(Model.AssignedUser?.FullName ?? "Unassigned")</p>
+                </div>
+            </div>
+
+            <hr />
+
+            <h6 class="text-primary fw-bold mb-3">Address Information</h6>
+            <div class="row g-4 mb-4">
+                <div class="col-12">
+                    <small class="text-muted">Address</small>
+                    <p class="fw-semibold">@(Model.Address ?? "Not provided")</p>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted">City</small>
+                    <p class="fw-semibold">@(Model.City ?? "Not provided")</p>
+                </div>
+                <div class="col-md-6">
+                    <small class="text-muted">State</small>
+                    <p class="fw-semibold">@(Model.State ?? "Not provided")</p>
+                </div>
+            </div>
+
+            <hr />
+
+            <h6 class="text-primary fw-bold mb-3">Record Information</h6>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <small class="text-muted">Created Date</small>
+                    <p class="fw-semibold">@Model.CreatedDate.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")</p>
+                </div>
+                <div class="col-md-4">
+                    <small class="text-muted">Last Modified</small>
+                    <p class="fw-semibold">
+                        @(Model.ModifiedDate?.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt") ?? "Never")
+                    </p>
+                </div>
+                <div class="col-md-4">
+                    <small class="text-muted">Created By (User ID)</small>
+                    <p class="fw-semibold">@Model.CreatedBy</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

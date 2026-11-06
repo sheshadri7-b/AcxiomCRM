@@ -1,0 +1,12 @@
+bin/
+obj/
+.vscode/
+.idea/
+.DS_Store
+
+*.db
+*.db-shm
+*.db-wal
+
+acxiom-cookies.txt
+appsettings.Development.json

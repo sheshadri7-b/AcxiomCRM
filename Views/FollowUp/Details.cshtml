@@ -1,0 +1,70 @@
+@model AcxiomCRM.Models.FollowUp
+
+@{
+    ViewData["Title"] = "Follow-up Details";
+}
+
+<div class="container mt-4">
+    <h2>Follow-up Details</h2>
+    <hr />
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Follow-up ID</dt>
+                <dd class="col-sm-9">@Model.FollowUpId</dd>
+
+                <dt class="col-sm-3">Subject</dt>
+                <dd class="col-sm-9">@Model.Subject</dd>
+
+                <dt class="col-sm-3">Related To</dt>
+                <dd class="col-sm-9">
+                    @if (Model.Customer != null)
+                    {
+                        <span>Customer: @Model.Customer.CustomerName</span>
+                    }
+                    else if (Model.Lead != null)
+                    {
+                        <span>Lead: @Model.Lead.LeadName</span>
+                    }
+                    else
+                    {
+                        <span>Not linked</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Date</dt>
+                <dd class="col-sm-9">
+                    @Model.FollowUpDate.ToString("dd MMM yyyy")
+                </dd>
+
+                <dt class="col-sm-3">Type</dt>
+                <dd class="col-sm-9">@Model.FollowUpType</dd>
+
+                <dt class="col-sm-3">Status</dt>
+                <dd class="col-sm-9">
+                    <span class="badge @(Model.Status == "Completed" ? "bg-success" : Model.Status == "Missed" ? "bg-danger" : Model.Status == "Cancelled" ? "bg-secondary" : "bg-warning text-dark")">
+                        @Model.Status
+                    </span>
+                </dd>
+
+                <dt class="col-sm-3">Remarks</dt>
+                <dd class="col-sm-9">
+                    @(string.IsNullOrWhiteSpace(Model.Remarks) ? "No remarks" : Model.Remarks)
+                </dd>
+
+                <dt class="col-sm-3">Created Date</dt>
+                <dd class="col-sm-9">
+                    @Model.CreatedDate.ToString("dd MMM yyyy HH:mm")
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a asp-action="Edit" asp-route-id="@Model.FollowUpId"
+           class="btn btn-warning">Edit</a>
+
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>

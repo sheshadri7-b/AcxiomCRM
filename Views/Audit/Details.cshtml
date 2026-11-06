@@ -1,0 +1,59 @@
+@model AcxiomCRM.Models.AuditLog
+
+@{
+    ViewData["Title"] = "Audit Details";
+}
+
+<div class="container mt-4">
+    <h2>Audit Log Details</h2>
+    <hr />
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Audit ID</dt>
+                <dd class="col-sm-9">@Model.AuditLogId</dd>
+
+                <dt class="col-sm-3">User ID</dt>
+                <dd class="col-sm-9">@Model.UserId</dd>
+
+                <dt class="col-sm-3">Action</dt>
+                <dd class="col-sm-9">@Model.Action</dd>
+
+                <dt class="col-sm-3">Entity</dt>
+                <dd class="col-sm-9">@Model.EntityName</dd>
+
+                <dt class="col-sm-3">Record ID</dt>
+                <dd class="col-sm-9">@Model.RecordId</dd>
+
+                <dt class="col-sm-3">Result</dt>
+                <dd class="col-sm-9">@Model.Result</dd>
+
+                <dt class="col-sm-3">Old Value</dt>
+                <dd class="col-sm-9">
+                    <pre class="text-wrap">@Model.OldValue</pre>
+                </dd>
+
+                <dt class="col-sm-3">New Value</dt>
+                <dd class="col-sm-9">
+                    <pre class="text-wrap">@Model.NewValue</pre>
+                </dd>
+
+                <dt class="col-sm-3">Details</dt>
+                <dd class="col-sm-9">@Model.Details</dd>
+
+                <dt class="col-sm-3">IP Address</dt>
+                <dd class="col-sm-9">@Model.IpAddress</dd>
+
+                <dt class="col-sm-3">Created Date</dt>
+                <dd class="col-sm-9">
+                    @Model.CreatedDate.ToString("dd MMM yyyy HH:mm:ss")
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    <a asp-action="Index" class="btn btn-secondary mt-3">
+        Back to Audit Logs
+    </a>
+</div>

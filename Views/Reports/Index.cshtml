@@ -1,0 +1,679 @@
+
+@model AcxiomCRM.Models.ViewModels.ReportsViewModel
+
+@{
+    ViewData["Title"] = "CRM Reports";
+
+    var reportTypes = new Dictionary<string, string>
+    {
+        ["Customers"] = "Customer Report",
+        ["Leads"] = "Lead Report",
+        ["FollowUps"] = "Follow-up Report",
+        ["Opportunities"] = "Opportunity Report",
+        ["Pipeline"] = "Pipeline Report",
+        ["Sales"] = "Sales & Conversion Report",
+        ["UserActivity"] = "User Activity Report",
+        ["Audit"] = "Audit Report"
+    };
+
+    var statusOptions = Model.ReportType switch
+    {
+        "Customers" => new[] { "Active", "Inactive" },
+        "Leads" => new[] { "New", "Contacted", "Qualified", "Unqualified", "Converted", "Lost" },
+        "FollowUps" => new[] { "Planned", "Completed", "Missed", "Cancelled" },
+        "Opportunities" => new[] { "Open", "Won", "Lost" },
+        "Pipeline" => new[] { "Open" },
+        "Sales" => new[] { "Won" },
+        "UserActivity" => new[] { "Success", "Failure" },
+        "Audit" => new[] { "Success", "Failure" },
+        _ => Array.Empty<string>()
+    };
+
+    bool showStageFilter =
+        Model.ReportType == "Opportunities" ||
+        Model.ReportType == "Pipeline" ||
+        Model.ReportType == "Sales";
+
+    var selectedReportName = reportTypes.ContainsKey(Model.ReportType)
+        ? reportTypes[Model.ReportType]
+        : "CRM Report";
+}
+
+<div class="container py-4">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">CRM Reports</h2>
+            <p class="text-muted mb-0">
+                Analyze customers, leads, opportunities and sales performance.
+            </p>
+        </div>
+
+        <a asp-controller="Home"
+           asp-action="Index"
+           class="btn btn-outline-secondary">
+            Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4 col-lg">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <small class="text-muted">Customers</small>
+                    <h3 class="fw-bold mb-0">@Model.TotalCustomers</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <small class="text-muted">Leads</small>
+                    <h3 class="fw-bold mb-0">@Model.TotalLeads</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <small class="text-muted">Opportunities</small>
+                    <h3 class="fw-bold mb-0">@Model.TotalOpportunities</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <small class="text-muted">Follow-ups</small>
+                    <h3 class="fw-bold mb-0">@Model.TotalFollowUps</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <small class="text-muted">Activities</small>
+                    <h3 class="fw-bold mb-0">@Model.TotalActivities</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Financial Summary -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <small class="text-muted">Open Pipeline Value</small>
+                    <h4 class="fw-bold mb-0">
+                        @Model.TotalPipelineValue.ToString("C",
+                            System.Globalization.CultureInfo.GetCultureInfo("en-IN"))
+                    </h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <small class="text-muted">Weighted Pipeline</small>
+                    <h4 class="fw-bold text-primary mb-0">
+                        @Model.WeightedPipelineValue.ToString("C",
+                            System.Globalization.CultureInfo.GetCultureInfo("en-IN"))
+                    </h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <small class="text-muted">Won Opportunity Value</small>
+                    <h4 class="fw-bold text-success mb-0">
+                        @Model.TotalWonValue.ToString("C",
+                            System.Globalization.CultureInfo.GetCultureInfo("en-IN"))
+                    </h4>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Report Filters -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body p-4">
+
+            <h5 class="fw-bold mb-3">Select Report</h5>
+
+            <form method="get" asp-controller="Reports" asp-action="Index">
+
+                <div class="row g-3">
+
+                    <!-- Report Type -->
+                    <div class="col-md-4">
+                        <label class="form-label" for="reportTypeSelect">
+                            Report Type
+                        </label>
+
+                        <select name="reportType"
+                                id="reportTypeSelect"
+                                class="form-select">
+
+                            @foreach (var report in reportTypes)
+                            {
+                                <option value="@report.Key"
+                                        selected="@(Model.ReportType == report.Key)">
+                                    @report.Value
+                                </option>
+                            }
+
+                        </select>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="col-md-4">
+                        <label class="form-label" for="searchInput">
+                            Search
+                        </label>
+
+                        <input name="search"
+                               id="searchInput"
+                               value="@Model.Search"
+                               class="form-control"
+                               placeholder="Enter search keyword" />
+                    </div>
+
+                    <!-- Dynamic Status -->
+                    <div class="col-md-4">
+                        <label class="form-label" for="statusSelect">
+                            Status / Result
+                        </label>
+
+                        <select name="status"
+                                id="statusSelect"
+                                class="form-select">
+
+                            <option value="">All Statuses</option>
+
+                            @foreach (var item in statusOptions)
+                            {
+                                <option value="@item"
+                                        selected="@(Model.Status == item)">
+                                    @item
+                                </option>
+                            }
+
+                        </select>
+                    </div>
+
+                    <!-- Opportunity Stage: Only for relevant reports -->
+                    @if (showStageFilter)
+                    {
+                        <div class="col-md-4">
+                            <label class="form-label" for="stageSelect">
+                                Opportunity Stage
+                            </label>
+
+                            <select name="stage"
+                                    id="stageSelect"
+                                    class="form-select">
+
+                                <option value="">All Stages</option>
+
+                                @foreach (var item in new[]
+                                {
+                                    "Qualification",
+                                    "Proposal",
+                                    "Negotiation",
+                                    "Won",
+                                    "Lost"
+                                })
+                                {
+                                    <option value="@item"
+                                            selected="@(Model.Stage == item)">
+                                        @item
+                                    </option>
+                                }
+
+                            </select>
+                        </div>
+                    }
+
+                    <!-- Admin Assignment Filter -->
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="col-md-4">
+                            <label class="form-label" for="assignedToInput">
+                                Assigned User ID
+                            </label>
+
+                            <input name="assignedTo"
+                                   id="assignedToInput"
+                                   value="@Model.AssignedTo"
+                                   class="form-control"
+                                   placeholder="Enter user ID" />
+                        </div>
+                    }
+
+                    <!-- From Date -->
+                    <div class="col-md-4">
+                        <label class="form-label" for="fromDate">
+                            From Date
+                        </label>
+
+                        <input type="date"
+                               name="fromDate"
+                               id="fromDate"
+                               value="@Model.FromDate?.ToString("yyyy-MM-dd")"
+                               class="form-control" />
+                    </div>
+
+                    <!-- To Date -->
+                    <div class="col-md-4">
+                        <label class="form-label" for="toDate">
+                            To Date
+                        </label>
+
+                        <input type="date"
+                               name="toDate"
+                               id="toDate"
+                               value="@Model.ToDate?.ToString("yyyy-MM-dd")"
+                               class="form-control" />
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="col-12 d-flex flex-wrap gap-2">
+
+                        <button type="submit" class="btn btn-primary">
+                            Generate Report
+                        </button>
+
+                        <a asp-action="Index"
+                           class="btn btn-outline-secondary">
+                            Reset Filters
+                        </a>
+
+                        <a asp-action="Export"
+                           asp-route-reportType="@Model.ReportType"
+                           asp-route-search="@Model.Search"
+                           asp-route-status="@Model.Status"
+                           asp-route-stage="@Model.Stage"
+                           asp-route-assignedTo="@Model.AssignedTo"
+                           asp-route-fromDate="@Model.FromDate?.ToString("yyyy-MM-dd")"
+                           asp-route-toDate="@Model.ToDate?.ToString("yyyy-MM-dd")"
+                           class="btn btn-success">
+                            Export CSV
+                        </a>
+
+                    </div>
+
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Report Results -->
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0">@selectedReportName</h5>
+            <small class="text-muted">
+                @Model.TotalRecords record(s) found
+            </small>
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <!-- Customer Report -->
+                @if (Model.ReportType == "Customers")
+                {
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Code</th>
+                                <th>Customer</th>
+                                <th>Company</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var c in Model.Customers)
+                            {
+                                <tr>
+                                    <td>@c.CustomerCode</td>
+                                    <td>@c.CustomerName</td>
+                                    <td>@c.CompanyName</td>
+                                    <td>@c.Email</td>
+                                    <td>@c.Phone</td>
+                                    <td>@c.Status</td>
+                                    <td>@c.CreatedDate.ToString("dd MMM yyyy")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else if (Model.ReportType == "Leads")
+                {
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Code</th>
+                                <th>Lead</th>
+                                <th>Company</th>
+                                <th>Source</th>
+                                <th>Expected Value</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var l in Model.Leads)
+                            {
+                                <tr>
+                                    <td>@l.LeadCode</td>
+                                    <td>@l.LeadName</td>
+                                    <td>@l.CompanyName</td>
+                                    <td>@l.Source</td>
+                                    <td>
+                                        @l.ExpectedValue.ToString("C",
+                                            System.Globalization.CultureInfo.GetCultureInfo("en-IN"))
+                                    </td>
+                                    <td>@l.Status</td>
+                                    <td>@l.Priority</td>
+                                    <td>@l.CreatedDate.ToString("dd MMM yyyy")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else if (Model.ReportType == "FollowUps")
+                {
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Subject</th>
+                                <th>Type</th>
+                                <th>Customer</th>
+                                <th>Lead</th>
+                                <th>Follow-up Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var f in Model.FollowUps)
+                            {
+                                <tr>
+                                    <td>@f.Subject</td>
+                                    <td>@f.FollowUpType</td>
+                                    <td>@f.CustomerName</td>
+                                    <td>@f.LeadName</td>
+                                    <td>@f.FollowUpDate.ToString("dd MMM yyyy")</td>
+                                    <td>@f.Status</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else if (Model.ReportType == "Opportunities" ||
+                         Model.ReportType == "Pipeline" ||
+                         Model.ReportType == "Sales")
+                {
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Opportunity</th>
+                                <th>Customer</th>
+                                <th>Lead</th>
+                                <th>Amount</th>
+                                <th>Probability</th>
+                                <th>Weighted Value</th>
+                                <th>Stage</th>
+                                <th>Status</th>
+                                <th>Expected Close</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var o in Model.Opportunities)
+                            {
+                                <tr>
+                                    <td>@o.OpportunityName</td>
+                                    <td>@o.CustomerName</td>
+                                    <td>@o.LeadName</td>
+                                    <td>
+                                        @o.Amount.ToString("C",
+                                            System.Globalization.CultureInfo.GetCultureInfo("en-IN"))
+                                    </td>
+                                    <td>@o.Probability%</td>
+                                    <td>
+                                        @o.WeightedPipeline.ToString("C",
+                                            System.Globalization.CultureInfo.GetCultureInfo("en-IN"))
+                                    </td>
+                                    <td>@o.Stage</td>
+                                    <td>@o.Status</td>
+                                    <td>@o.ExpectedCloseDate.ToString("dd MMM yyyy")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else if (Model.ReportType == "UserActivity")
+                {
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>User ID</th>
+                                <th>User Name</th>
+                                <th>Activity Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var u in Model.UserActivities)
+                            {
+                                <tr>
+                                    <td>@u.UserId</td>
+                                    <td>@u.UserName</td>
+                                    <td>@u.ActivityCount</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else if (Model.ReportType == "Audit")
+                {
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Log ID</th>
+                                <th>User ID</th>
+                                <th>Action</th>
+                                <th>Entity</th>
+                                <th>Record ID</th>
+                                <th>Result</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var a in Model.AuditLogs)
+                            {
+                                <tr>
+                                    <td>@a.AuditLogId</td>
+                                    <td>@a.UserId</td>
+                                    <td>@a.Action</td>
+                                    <td>@a.EntityName</td>
+                                    <td>@a.RecordId</td>
+                                    <td>@a.Result</td>
+                                    <td>@a.CreatedDate.ToString("dd MMM yyyy HH:mm")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+
+                <!-- Empty State -->
+                @if (Model.TotalRecords == 0)
+                {
+                    <div class="text-center text-muted py-5">
+                        <h5>No records found</h5>
+                        <p class="mb-0">Try changing your filters.</p>
+                    </div>
+                }
+
+            </div>
+
+            <!-- Pagination -->
+            @if (Model.TotalPages > 1)
+            {
+                <nav class="mt-4">
+                    <ul class="pagination justify-content-center">
+
+                        <li class="page-item @(Model.CurrentPage <= 1 ? "disabled" : "")">
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-all-route-data="@(new Dictionary<string, string?>
+                               {
+                                   ["reportType"] = Model.ReportType,
+                                   ["search"] = Model.Search,
+                                   ["status"] = Model.Status,
+                                   ["stage"] = Model.Stage,
+                                   ["assignedTo"] = Model.AssignedTo,
+                                   ["fromDate"] = Model.FromDate?.ToString("yyyy-MM-dd"),
+                                   ["toDate"] = Model.ToDate?.ToString("yyyy-MM-dd"),
+                                   ["page"] = (Model.CurrentPage - 1).ToString()
+                               })">
+                                Previous
+                            </a>
+                        </li>
+
+                        <li class="page-item disabled">
+                            <span class="page-link">
+                                Page @Model.CurrentPage of @Model.TotalPages
+                            </span>
+                        </li>
+
+                        <li class="page-item @(Model.CurrentPage >= Model.TotalPages ? "disabled" : "")">
+                            <a class="page-link"
+                               asp-action="Index"
+                               asp-all-route-data="@(new Dictionary<string, string?>
+                               {
+                                   ["reportType"] = Model.ReportType,
+                                   ["search"] = Model.Search,
+                                   ["status"] = Model.Status,
+                                   ["stage"] = Model.Stage,
+                                   ["assignedTo"] = Model.AssignedTo,
+                                   ["fromDate"] = Model.FromDate?.ToString("yyyy-MM-dd"),
+                                   ["toDate"] = Model.ToDate?.ToString("yyyy-MM-dd"),
+                                   ["page"] = (Model.CurrentPage + 1).ToString()
+                               })">
+                                Next
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
+            }
+
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const reportTypeSelect =
+                document.getElementById("reportTypeSelect");
+
+            const statusSelect =
+                document.getElementById("statusSelect");
+
+            if (!reportTypeSelect || !statusSelect) {
+                return;
+            }
+
+            const statusOptions = {
+                Customers: ["Active", "Inactive"],
+
+                Leads: [
+                    "New",
+                    "Contacted",
+                    "Qualified",
+                    "Unqualified",
+                    "Converted",
+                    "Lost"
+                ],
+
+                FollowUps: [
+                    "Planned",
+                    "Completed",
+                    "Missed",
+                    "Cancelled"
+                ],
+
+                Opportunities: ["Open", "Won", "Lost"],
+
+                Pipeline: ["Open"],
+
+                Sales: ["Won"],
+
+                UserActivity: ["Success", "Failure"],
+
+                Audit: ["Success", "Failure"]
+            };
+
+            function updateStatusOptions() {
+
+                const reportType = reportTypeSelect.value;
+                const previousValue = statusSelect.value;
+                const options = statusOptions[reportType] || [];
+
+                statusSelect.innerHTML = "";
+
+                const allOption = document.createElement("option");
+                allOption.value = "";
+                allOption.textContent = "All Statuses";
+
+                statusSelect.appendChild(allOption);
+
+                options.forEach(function (status) {
+
+                    const option = document.createElement("option");
+
+                    option.value = status;
+                    option.textContent = status;
+
+                    statusSelect.appendChild(option);
+                });
+
+                if (options.includes(previousValue)) {
+                    statusSelect.value = previousValue;
+                } else {
+                    statusSelect.value = "";
+                }
+            }
+
+            reportTypeSelect.addEventListener(
+                "change",
+                updateStatusOptions
+            );
+
+            updateStatusOptions();
+        });
+    </script>
+}

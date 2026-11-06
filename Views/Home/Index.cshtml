@@ -1,0 +1,201 @@
+﻿
+@model AcxiomCRM.Models.ViewModels.DashboardViewModel
+@using System.Text.Json
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">CRM Dashboard</h2>
+            <p class="text-muted mb-0">Overview of your CRM performance</p>
+        </div>
+        <span class="badge bg-primary fs-6">AcxiomCRM</span>
+    </div>
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Total Customers</p>
+                    <h3 class="fw-bold">@Model.TotalCustomers</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Total Leads</p>
+                    <h3 class="fw-bold">@Model.TotalLeads</h3>
+                    <small class="text-primary">@Model.OpenLeads Open</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Total Opportunities</p>
+                    <h3 class="fw-bold">@Model.TotalOpportunities</h3>
+                    <small class="text-primary">@Model.OpenOpportunities Open</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Pipeline Value</p>
+                    <h3 class="fw-bold">
+                        ₹@Model.PipelineValue.ToString("N2")
+                    </h3>
+                    <small class="text-muted">Weighted pipeline</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Open Opportunities</p>
+                    <h3 class="fw-bold">@Model.OpenOpportunities</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Won Opportunities</p>
+                    <h3 class="fw-bold text-success">@Model.WonOpportunities</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Lost Opportunities</p>
+                    <h3 class="fw-bold text-danger">@Model.LostOpportunities</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3">Lead Status</h5>
+                    <canvas id="leadChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3">Opportunity Pipeline</h5>
+                    <canvas id="opportunityChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3">Monthly Sales</h5>
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const leadLabels = @Html.Raw(JsonSerializer.Serialize(
+        Model.LeadStatusCounts.Keys));
+
+    const leadValues = @Html.Raw(JsonSerializer.Serialize(
+        Model.LeadStatusCounts.Values));
+
+    const opportunityLabels = @Html.Raw(JsonSerializer.Serialize(
+        Model.OpportunityStageCounts.Keys));
+
+    const opportunityValues = @Html.Raw(JsonSerializer.Serialize(
+        Model.OpportunityStageCounts.Values));
+
+    const salesLabels = @Html.Raw(JsonSerializer.Serialize(
+        Model.MonthlySales.Keys));
+
+    const salesValues = @Html.Raw(JsonSerializer.Serialize(
+        Model.MonthlySales.Values));
+
+    new Chart(document.getElementById('leadChart'), {
+        type: 'doughnut',
+        data: {
+            labels: leadLabels,
+            datasets: [{
+                data: leadValues
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true
+        }
+    });
+
+    new Chart(document.getElementById('opportunityChart'), {
+        type: 'bar',
+        data: {
+            labels: opportunityLabels,
+            datasets: [{
+                label: 'Opportunities',
+                data: opportunityValues
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('salesChart'), {
+        type: 'line',
+        data: {
+            labels: salesLabels,
+            datasets: [{
+                label: 'Won Opportunity Amount (₹)',
+                data: salesValues,
+                tension: 0.3,
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>

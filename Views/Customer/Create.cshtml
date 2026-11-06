@@ -1,0 +1,99 @@
+@model AcxiomCRM.Models.Customer
+
+@{
+    ViewData["Title"] = "Create Customer";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">Create Customer</h2>
+            <p class="text-muted">Add a new customer to AcxiomCRM</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary">Back to Customers</a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="CustomerName" class="form-label">Customer Name *</label>
+                        <input asp-for="CustomerName" class="form-control" placeholder="Enter customer name" />
+                        <span asp-validation-for="CustomerName" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="CompanyName" class="form-label">Company Name</label>
+                        <input asp-for="CompanyName" class="form-control" placeholder="Enter company name" />
+                        <span asp-validation-for="CompanyName" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Email" class="form-label">Email *</label>
+                        <input asp-for="Email" type="email" class="form-control" placeholder="name@example.com" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Phone" class="form-label">Phone *</label>
+                        <input asp-for="Phone" type="tel" class="form-control" placeholder="Enter phone number" />
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="Address" class="form-label">Address</label>
+                        <textarea asp-for="Address" class="form-control" rows="2" placeholder="Enter address"></textarea>
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="City" class="form-label">City</label>
+                        <input asp-for="City" class="form-control" placeholder="Enter city" />
+                        <span asp-validation-for="City" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="State" class="form-label">State</label>
+                        <input asp-for="State" class="form-control" placeholder="Enter state" />
+                        <span asp-validation-for="State" class="text-danger"></span>
+                    </div>
+
+                    @if (ViewBag.CanManageAssignments == true)
+                    {
+                        <div class="col-md-6">
+                            <label asp-for="AssignedTo" class="form-label">Assign To</label>
+                            <select asp-for="AssignedTo"
+                                    asp-items="ViewBag.AssignableUsers"
+                                    class="form-select">
+                            </select>
+                            <span asp-validation-for="AssignedTo" class="text-danger"></span>
+                            <small class="text-muted">Choose an eligible employee or leave this customer unassigned.</small>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-12">
+                            <div class="alert alert-info mb-0">
+                                This customer will be assigned to your account.
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <hr class="my-4" />
+
+                <div class="d-flex justify-content-end gap-2">
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save Customer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

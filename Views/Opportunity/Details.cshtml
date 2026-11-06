@@ -1,0 +1,213 @@
+
+@model AcxiomCRM.Models.Opportunity
+
+@{
+    ViewData["Title"] = "Opportunity Details";
+    var currency = System.Globalization.CultureInfo.GetCultureInfo("en-IN");
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">Opportunity Details</h2>
+            <p class="text-muted mb-0">
+                View complete information about this sales opportunity.
+            </p>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a asp-action="Edit"
+               asp-route-id="@Model.OpportunityId"
+               class="btn btn-primary">
+                Edit Opportunity
+            </a>
+
+            <a asp-action="Index"
+               class="btn btn-outline-secondary">
+                Back to Opportunities
+            </a>
+        </div>
+    </div>
+
+    <!-- Opportunity Header -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body p-4">
+
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h4 class="fw-bold">@Model.OpportunityName</h4>
+                    <p class="text-muted mb-0">
+                        Opportunity #@Model.OpportunityId
+                    </p>
+                </div>
+
+                <div class="text-end">
+                    @if (Model.Status == "Won")
+                    {
+                        <span class="badge bg-success fs-6">Won</span>
+                    }
+                    else if (Model.Status == "Lost")
+                    {
+                        <span class="badge bg-danger fs-6">Lost</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-primary fs-6">Open</span>
+                    }
+
+                    <div class="mt-2">
+                        <span class="badge bg-secondary">
+                            @Model.Stage
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Deal Information -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">Deal Information</h5>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <div class="mb-3">
+                        <small class="text-muted">Opportunity Name</small>
+                        <p class="fw-semibold">@Model.OpportunityName</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-muted">Amount</small>
+                        <h4 class="fw-bold">
+                            @Model.Amount.ToString("C", currency)
+                        </h4>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-muted">Probability</small>
+                        <p class="fw-semibold">@Model.Probability%</p>
+
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar"
+                                 role="progressbar"
+                                 style="width: @Model.Probability%;"
+                                 aria-valuenow="@Model.Probability"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-muted">Weighted Pipeline Value</small>
+                        <h5 class="fw-bold text-primary">
+                            @Model.WeightedPipeline.ToString("C", currency)
+                        </h5>
+                    </div>
+
+                    <div class="mb-0">
+                        <small class="text-muted">Expected Close Date</small>
+                        <p class="fw-semibold">
+                            @Model.ExpectedCloseDate.ToString("dd MMM yyyy")
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Relationship Information -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">Related Records</h5>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <div class="mb-4">
+                        <small class="text-muted">Associated Customer</small>
+
+                        @if (Model.Customer != null)
+                        {
+                            <p class="fw-semibold mb-1">
+                                @Model.Customer.CustomerName
+                            </p>
+                            <small class="text-muted">
+                                @Model.Customer.Email
+                            </small>
+                        }
+                        else
+                        {
+                            <p class="text-muted">Not linked to a customer</p>
+                        }
+                    </div>
+
+                    <div class="mb-4">
+                        <small class="text-muted">Associated Lead</small>
+
+                        @if (Model.Lead != null)
+                        {
+                            <p class="fw-semibold mb-1">
+                                @Model.Lead.LeadName
+                            </p>
+                            <small class="text-muted">
+                                @Model.Lead.LeadCode
+                            </small>
+                        }
+                        else
+                        {
+                            <p class="text-muted">Not linked to a lead</p>
+                        }
+                    </div>
+
+                    <div class="mb-0">
+                        <small class="text-muted">Assigned To</small>
+                        <p class="fw-semibold">
+                            @(ViewBag.AssignedUser ?? "Unknown")
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Information -->
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+
+                <div class="card-header bg-white py-3">
+                    <h5 class="fw-bold mb-0">Additional Information</h5>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <div class="mb-3">
+                        <small class="text-muted">Created Date</small>
+                        <p class="fw-semibold">
+                            @Model.CreatedDate.ToLocalTime()
+                                .ToString("dd MMM yyyy, hh:mm tt")
+                        </p>
+                    </div>
+
+                    <div>
+                        <small class="text-muted">Notes</small>
+                        <p class="mb-0" style="white-space: pre-wrap;">@(Model.Notes ?? "No additional notes available.")</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>

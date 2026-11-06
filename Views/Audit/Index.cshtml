@@ -1,0 +1,155 @@
+@model IEnumerable<AcxiomCRM.Models.AuditLog>
+
+@{
+    ViewData["Title"] = "Audit Logs";
+}
+
+<div class="container mt-4">
+    <h2>Audit Management</h2>
+    <p class="text-muted">Review and monitor CRM system activities.</p>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <strong>Total Records:</strong> @ViewBag.TotalRecords
+        </div>
+    </div>
+
+    <form asp-action="Index" method="get" class="row g-2 mb-3">
+
+        <div class="col-md-3">
+            <input type="text" name="search"
+                   value="@ViewBag.Search"
+                   class="form-control"
+                   placeholder="Search user, action, entity..." />
+        </div>
+
+        <div class="col-md-2">
+            <select name="actionType" class="form-select">
+                <option value="">All Actions</option>
+                @foreach (var action in (string[])ViewBag.Actions)
+                {
+                    <option value="@action"
+                            selected="@(ViewBag.ActionType == action)">
+                        @action
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <select name="entityName" class="form-select">
+                <option value="">All Entities</option>
+                @foreach (var entity in (string[])ViewBag.Entities)
+                {
+                    <option value="@entity"
+                            selected="@(ViewBag.EntityName == entity)">
+                        @entity
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <select name="result" class="form-select">
+                <option value="">All Results</option>
+                @foreach (var result in (string[])ViewBag.Results)
+                {
+                    <option value="@result"
+                            selected="@(ViewBag.Result == result)">
+                        @result
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <input type="date" name="fromDate"
+                   value="@ViewBag.FromDate" class="form-control mb-2" />
+            <input type="date" name="toDate"
+                   value="@ViewBag.ToDate" class="form-control" />
+        </div>
+
+        <div class="col-md-12">
+            <button type="submit" class="btn btn-primary">Apply Filters</button>
+            <a asp-action="Index" class="btn btn-secondary">Clear</a>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>User ID</th>
+                    <th>Action</th>
+                    <th>Entity</th>
+                    <th>Record ID</th>
+                    <th>Result</th>
+                    <th>Date</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model.Any())
+                {
+                    @foreach (var log in Model)
+                    {
+                        <tr>
+                            <td>@log.AuditLogId</td>
+                            <td>@log.UserId</td>
+                            <td>@log.Action</td>
+                            <td>@log.EntityName</td>
+                            <td>@log.RecordId</td>
+                            <td>
+                                <span class="badge @(log.Result == "Success" ? "bg-success" : "bg-danger")">
+                                    @log.Result
+                                </span>
+                            </td>
+                            <td>@log.CreatedDate.ToString("dd MMM yyyy HH:mm")</td>
+                            <td>
+                                <a asp-action="Details"
+                                   asp-route-id="@log.AuditLogId"
+                                   class="btn btn-sm btn-info">
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" class="text-center">
+                            No audit records found.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (ViewBag.TotalPages > 1)
+    {
+        <nav>
+            <ul class="pagination">
+                @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                {
+                    <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@i"
+                           asp-route-search="@ViewBag.Search"
+                           asp-route-actionType="@ViewBag.ActionType"
+                           asp-route-entityName="@ViewBag.EntityName"
+                           asp-route-result="@ViewBag.Result"
+                           asp-route-fromDate="@ViewBag.FromDate"
+                           asp-route-toDate="@ViewBag.ToDate">
+                            @i
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+</div>

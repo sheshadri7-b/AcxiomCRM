@@ -1,0 +1,120 @@
+
+@model AcxiomCRM.Models.Opportunity
+
+@{
+    ViewData["Title"] = "Delete Opportunity";
+    var currency = System.Globalization.CultureInfo.GetCultureInfo("en-IN");
+}
+
+<div class="container py-4">
+
+    <div class="mb-4">
+        <h2 class="fw-bold text-danger">Delete Opportunity</h2>
+        <p class="text-muted">
+            Review the opportunity information before confirming deletion.
+        </p>
+    </div>
+
+    <div class="alert alert-warning">
+        <strong>Warning!</strong>
+        You are about to permanently delete this opportunity.
+        This action cannot be undone.
+    </div>
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0">Opportunity Information</h5>
+        </div>
+
+        <div class="card-body p-4">
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <small class="text-muted">Opportunity Name</small>
+                    <p class="fw-semibold">@Model.OpportunityName</p>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">Opportunity ID</small>
+                    <p class="fw-semibold">@Model.OpportunityId</p>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">Customer</small>
+                    <p class="fw-semibold">
+                        @(Model.Customer?.CustomerName ?? "Not linked")
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">Lead</small>
+                    <p class="fw-semibold">
+                        @(Model.Lead?.LeadName ?? "Not linked")
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">Amount</small>
+                    <p class="fw-semibold">
+                        @Model.Amount.ToString("C", currency)
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">Probability</small>
+                    <p class="fw-semibold">@Model.Probability%</p>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">Weighted Pipeline</small>
+                    <p class="fw-semibold">
+                        @Model.WeightedPipeline.ToString("C", currency)
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">Stage</small>
+                    <p class="fw-semibold">@Model.Stage</p>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">Status</small>
+                    <p class="fw-semibold">@Model.Status</p>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">Expected Close Date</small>
+                    <p class="fw-semibold">
+                        @Model.ExpectedCloseDate.ToString("dd MMM yyyy")
+                    </p>
+                </div>
+
+            </div>
+
+            <hr />
+
+            <form asp-action="Delete"
+                  asp-route-id="@Model.OpportunityId"
+                  method="post">
+
+                <div class="d-flex justify-content-end gap-2">
+
+                    <a asp-action="Index"
+                       class="btn btn-outline-secondary">
+                        Cancel
+                    </a>
+
+                    <button type="submit" class="btn btn-danger"
+                            onclick="return confirm('Are you sure you want to permanently delete this opportunity?');">
+                        Delete Opportunity
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>

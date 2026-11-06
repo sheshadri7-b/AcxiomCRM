@@ -1,0 +1,67 @@
+@model AcxiomCRM.Models.Activity
+
+@{
+    ViewData["Title"] = "Activity Details";
+}
+
+<div class="container mt-4">
+    <h2>Activity Details</h2>
+    <hr />
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Activity ID</dt>
+                <dd class="col-sm-9">@Model.ActivityId</dd>
+
+                <dt class="col-sm-3">Subject</dt>
+                <dd class="col-sm-9">@Model.Subject</dd>
+
+                <dt class="col-sm-3">Activity Type</dt>
+                <dd class="col-sm-9">@Model.ActivityType</dd>
+
+                <dt class="col-sm-3">Related To</dt>
+                <dd class="col-sm-9">
+                    @if (Model.Customer != null)
+                    {
+                        <span>Customer: @Model.Customer.CustomerName</span>
+                    }
+                    else if (Model.Lead != null)
+                    {
+                        <span>Lead: @Model.Lead.LeadName</span>
+                    }
+                    else
+                    {
+                        <span>Not linked</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">Activity Date</dt>
+                <dd class="col-sm-9">
+                    @Model.ActivityDate.ToString("dd MMM yyyy HH:mm")
+                </dd>
+
+                <dt class="col-sm-3">Status</dt>
+                <dd class="col-sm-9">
+                    <span class="badge @(Model.Status == "Completed" ? "bg-success" : Model.Status == "Missed" ? "bg-danger" : Model.Status == "Cancelled" ? "bg-secondary" : "bg-warning text-dark")">
+                        @Model.Status
+                    </span>
+                </dd>
+
+                <dt class="col-sm-3">Description</dt>
+                <dd class="col-sm-9">
+                    @(string.IsNullOrWhiteSpace(Model.Description)
+                        ? "No description"
+                        : Model.Description)
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a asp-action="Edit" asp-route-id="@Model.ActivityId"
+           class="btn btn-warning">Edit</a>
+
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>

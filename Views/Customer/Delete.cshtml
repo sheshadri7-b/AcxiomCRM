@@ -1,0 +1,91 @@
+
+@model AcxiomCRM.Models.Customer
+
+@{
+    ViewData["Title"] = "Delete Customer";
+}
+
+<div class="container py-4">
+
+    <div class="mb-4">
+        <h2 class="fw-bold text-danger">Delete Customer</h2>
+        <p class="text-muted">
+            Review the customer information before confirming deletion.
+        </p>
+    </div>
+
+    <div class="alert alert-warning">
+        <strong>Warning!</strong>
+        You are about to permanently delete this customer.
+        This action cannot be undone.
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0">Customer Information</h5>
+        </div>
+
+        <div class="card-body p-4">
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <small class="text-muted">Customer Code</small>
+                    <p class="fw-semibold">@Model.CustomerCode</p>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">Customer Name</small>
+                    <p class="fw-semibold">@Model.CustomerName</p>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">Company</small>
+                    <p class="fw-semibold">
+                        @(Model.CompanyName ?? "Not provided")
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">Email</small>
+                    <p class="fw-semibold">@Model.Email</p>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">Phone</small>
+                    <p class="fw-semibold">@Model.Phone</p>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">Status</small>
+                    <p class="fw-semibold">@Model.Status</p>
+                </div>
+
+            </div>
+
+            <hr />
+
+            <form asp-action="Delete"
+                  asp-route-id="@Model.CustomerId"
+                  method="post">
+
+                <div class="d-flex justify-content-end gap-2">
+
+                    <a asp-action="Index"
+                       class="btn btn-outline-secondary">
+                        Cancel
+                    </a>
+
+                    <button type="submit"
+                            class="btn btn-danger"
+                            onclick="return confirm('Are you sure you want to permanently delete this customer?');">
+                        Delete Customer
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>

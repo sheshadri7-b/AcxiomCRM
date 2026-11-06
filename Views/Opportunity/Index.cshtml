@@ -1,0 +1,301 @@
+
+@model IEnumerable<AcxiomCRM.Models.Opportunity>
+
+@{
+    ViewData["Title"] = "Opportunities";
+
+    var totalAmount = Model.Sum(o => o.Amount);
+    var weightedPipeline = Model.Sum(o => o.WeightedPipeline);
+    var openCount = Model.Count(o => o.Status == "Open");
+}
+
+<div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">Opportunity Management</h2>
+            <p class="text-muted mb-0">
+                Track potential deals and manage your sales pipeline.
+            </p>
+        </div>
+
+        <a asp-action="Create" class="btn btn-primary">
+            + Add Opportunity
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button" class="btn-close"
+                    data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @TempData["Error"]
+            <button type="button" class="btn-close"
+                    data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Pipeline Summary -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Total Deal Value</p>
+                    <h4 class="fw-bold mb-0">
+                        @totalAmount.ToString("C",
+                            System.Globalization.CultureInfo.GetCultureInfo("en-IN"))
+                    </h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Weighted Pipeline Value</p>
+                    <h4 class="fw-bold text-primary mb-0">
+                        @weightedPipeline.ToString("C",
+                            System.Globalization.CultureInfo.GetCultureInfo("en-IN"))
+                    </h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <p class="text-muted mb-1">Open Opportunities</p>
+                    <h4 class="fw-bold mb-0">@openCount</h4>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+
+            <form asp-action="Index" method="get">
+                <div class="row g-3">
+
+                    <div class="col-md-5">
+                        <label class="form-label">Search</label>
+                        <input type="text"
+                               name="search"
+                               value="@ViewBag.Search"
+                               class="form-control"
+                               placeholder="Search opportunity, customer or lead" />
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label">Stage</label>
+                        <select name="stage" class="form-select">
+                            <option value="">All Stages</option>
+                            @foreach (string stage in ViewBag.Stages)
+                            {
+                                <option value="@stage"
+                                        selected="@(ViewBag.Stage?.ToString() == stage)">
+                                    @stage
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label">Status</label>
+                        <select name="status" class="form-select">
+                            <option value="">All Statuses</option>
+                            @foreach (string status in ViewBag.Statuses)
+                            {
+                                <option value="@status"
+                                        selected="@(ViewBag.Status?.ToString() == status)">
+                                    @status
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn btn-primary w-100">
+                            Search
+                        </button>
+                        <a asp-action="Index"
+                           class="btn btn-outline-secondary">
+                            Reset
+                        </a>
+                    </div>
+
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Opportunity Table -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Opportunity</th>
+                            <th>Customer / Lead</th>
+                            <th>Amount</th>
+                            <th>Probability</th>
+                            <th>Weighted Value</th>
+                            <th>Stage</th>
+                            <th>Status</th>
+                            <th>Expected Close</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            @foreach (var opportunity in Model)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">
+                                        @opportunity.OpportunityName
+                                    </td>
+
+                                    <td>
+                                        @if (opportunity.Customer != null)
+                                        {
+                                            <span>
+                                                @opportunity.Customer.CustomerName
+                                            </span>
+                                        }
+                                        else if (opportunity.Lead != null)
+                                        {
+                                            <span>
+                                                @opportunity.Lead.LeadName
+                                            </span>
+                                            <small class="text-muted d-block">
+                                                Lead
+                                            </small>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @opportunity.Amount.ToString("C",
+                                            System.Globalization.CultureInfo.GetCultureInfo("en-IN"))
+                                    </td>
+
+                                    <td>@opportunity.Probability%</td>
+
+                                    <td class="fw-semibold">
+                                        @opportunity.WeightedPipeline.ToString("C",
+                                            System.Globalization.CultureInfo.GetCultureInfo("en-IN"))
+                                    </td>
+
+                                    <td>
+                                        <span class="badge bg-secondary">
+                                            @opportunity.Stage
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @if (opportunity.Status == "Won")
+                                        {
+                                            <span class="badge bg-success">Won</span>
+                                        }
+                                        else if (opportunity.Status == "Lost")
+                                        {
+                                            <span class="badge bg-danger">Lost</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-primary">Open</span>
+                                        }
+                                    </td>
+
+                                    <td>
+                                        @opportunity.ExpectedCloseDate.ToString("dd MMM yyyy")
+                                    </td>
+
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <a asp-action="Details"
+                                               asp-route-id="@opportunity.OpportunityId"
+                                               class="btn btn-sm btn-outline-info">
+                                                View
+                                            </a>
+
+                                            <a asp-action="Edit"
+                                               asp-route-id="@opportunity.OpportunityId"
+                                               class="btn btn-sm btn-outline-primary">
+                                                Edit
+                                            </a>
+
+                                            <a asp-action="Delete"
+                                               asp-route-id="@opportunity.OpportunityId"
+                                               class="btn btn-sm btn-outline-danger">
+                                                Delete
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="9"
+                                    class="text-center py-4 text-muted">
+                                    No opportunities found.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if (ViewBag.TotalPages > 1)
+            {
+                <nav class="mt-3">
+                    <ul class="pagination justify-content-end">
+
+                        @for (int i = 1;
+                            i <= (int)ViewBag.TotalPages; i++)
+                        {
+                            <li class="page-item
+                                @(i == (int)ViewBag.CurrentPage ? "active" : "")">
+
+                                <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-page="@i"
+                                   asp-route-search="@ViewBag.Search"
+                                   asp-route-stage="@ViewBag.Stage"
+                                   asp-route-status="@ViewBag.Status">
+                                    @i
+                                </a>
+                            </li>
+                        }
+
+                    </ul>
+                </nav>
+            }
+
+        </div>
+    </div>
+
+</div>

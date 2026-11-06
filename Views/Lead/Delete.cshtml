@@ -1,0 +1,112 @@
+
+@model AcxiomCRM.Models.Lead
+
+@{
+    ViewData["Title"] = "Delete Lead";
+}
+
+<div class="container py-4">
+
+    <div class="mb-4">
+        <h2 class="fw-bold text-danger">Delete Lead</h2>
+        <p class="text-muted">
+            Review the lead information before confirming deletion.
+        </p>
+    </div>
+
+    <div class="alert alert-warning">
+        <strong>Warning!</strong>
+        You are about to permanently delete this lead.
+        This action cannot be undone.
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0">Lead Information</h5>
+        </div>
+
+        <div class="card-body p-4">
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <small class="text-muted">Lead Code</small>
+                    <p class="fw-semibold">@Model.LeadCode</p>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">Lead Name</small>
+                    <p class="fw-semibold">@Model.LeadName</p>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">Company</small>
+                    <p class="fw-semibold">
+                        @(Model.CompanyName ?? "Not provided")
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">Email</small>
+                    <p class="fw-semibold">
+                        @(Model.Email ?? "Not provided")
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">Phone</small>
+                    <p class="fw-semibold">
+                        @(Model.Phone ?? "Not provided")
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">Source</small>
+                    <p class="fw-semibold">@Model.Source</p>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">Expected Value</small>
+                    <p class="fw-semibold">
+                        @Model.ExpectedValue.ToString(
+                            "C",
+                            System.Globalization.CultureInfo.GetCultureInfo("en-IN"))
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">Status</small>
+                    <p class="fw-semibold">@Model.Status</p>
+                </div>
+
+                <div class="col-md-6">
+                    <small class="text-muted">Priority</small>
+                    <p class="fw-semibold">@Model.Priority</p>
+                </div>
+
+            </div>
+
+            <hr />
+
+            <form asp-action="Delete"
+                  asp-route-id="@Model.LeadId"
+                  method="post">
+
+                <div class="d-flex justify-content-end gap-2">
+
+                    <a asp-action="Index"
+                       class="btn btn-outline-secondary">
+                        Cancel
+                    </a>
+
+                    <button type="submit" class="btn btn-danger">
+                        Delete Lead
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
